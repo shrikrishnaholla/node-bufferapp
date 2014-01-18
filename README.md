@@ -1,7 +1,7 @@
 node-bufferapp
 ==============
 
-Node.js SDK for Buffer APIs http://bufferapp.com
+Node.js SDK for [Buffer](http://bufferapp.com) APIs
 
 Installation
 ------------
