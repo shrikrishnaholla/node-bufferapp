@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Node-bufferapp by shrikrishnaholla</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Node-bufferapp</h1>
+        <p>Node.js SDK for Buffer APIs http://bufferapp.com</p>
+
+        <p class="view"><a href="https://github.com/shrikrishnaholla/node-bufferapp">View the Project on GitHub <small>shrikrishnaholla/node-bufferapp</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/shrikrishnaholla/node-bufferapp/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/shrikrishnaholla/node-bufferapp/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/shrikrishnaholla/node-bufferapp">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="node-bufferapp" class="anchor" href="#node-bufferapp"><span class="octicon octicon-link"></span></a>node-bufferapp</h1>
+
+<p>Node.js SDK for Buffer APIs <a href="http://bufferapp.com">http://bufferapp.com</a></p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<pre><code>npm install node-bufferapp
+</code></pre>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>First, create a Buffer Client  </p>
+
+<pre><code>var BufferApp = require('node-bufferapp');  
+var bufferapp = new BufferApp({  
+    clientID : YOUR_APP_CLIENT_ID,  
+    clientSecret : YOUR_APP_CLIENT_SECRET,  
+    callbackURL : YOUR_APP_CALLBACK_URL  
+});  
+</code></pre>
+
+<p>Then, create a new user by logging him in</p>
+
+<pre><code>bufferapp.login(function(user){  
+  console.log(user.profile);  
+});  
+</code></pre>
+
+<p>The complete API documentation is in <a href="http://shrikrishnaholla.github.io/node-bufferapp/docs">docs</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/shrikrishnaholla">shrikrishnaholla</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-34261234-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
