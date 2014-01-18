@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>profiles.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bufferapp.html">
+                bufferapp.js
+              </a>
+            
+              
+              <a class="source" href="bufferuser.html">
+                bufferuser.js
+              </a>
+            
+              
+              <a class="source" href="error.html">
+                error.js
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                index.js
+              </a>
+            
+              
+              <a class="source" href="info.html">
+                info.js
+              </a>
+            
+              
+              <a class="source" href="links.html">
+                links.js
+              </a>
+            
+              
+              <a class="source" href="profiles.html">
+                profiles.js
+              </a>
+            
+              
+              <a class="source" href="updates.html">
+                updates.js
+              </a>
+            
+              
+              <a class="source" href="user.html">
+                user.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>profiles.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> BufferAppError = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./error'</span>).BufferAppError;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2 id="get-all-profiles">get All Profiles</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Get all social media profiles connected to a users account.
+Takes a callback as a parameter to which it passes an <a href="error.html">error object</a> if any, and a JSON
+response. A sample response, taken from <a href="http://bufferapp.com/developers/api/profiles">http://bufferapp.com/developers/api/profiles</a> is  </p>
+<pre><code class="lang-javascript">[ { 
+    &quot;avatar&quot; : &quot;http://a3.twimg.com/profile_images/1405180232.png&quot;,
+    &quot;created_at&quot; :  1320703028,
+    &quot;default&quot; : true,
+    &quot;formatted_username&quot; : &quot;@skinnyoteam&quot;,
+    &quot;id&quot; : &quot;4eb854340acb04e870000010&quot;,
+    &quot;schedules&quot; : [{ 
+        &quot;days&quot; : [ 
+            &quot;mon&quot;,
+            &quot;tue&quot;,
+            &quot;wed&quot;,
+            &quot;thu&quot;,
+            &quot;fri&quot;
+        ],
+        &quot;times&quot; : [ 
+            &quot;12:00&quot;,
+            &quot;17:00&quot;,
+            &quot;18:00&quot;
+        ]
+    }],
+    &quot;service&quot; : &quot;twitter&quot;,
+    &quot;service_id&quot; : &quot;164724445&quot;,
+    &quot;service_username&quot; : &quot;skinnyoteam&quot;,
+    &quot;statistics&quot; : { 
+        &quot;followers&quot; : 246 
+    },
+    &quot;team_members&quot; : [
+        &quot;4eb867340acb04e670000001&quot;
+    ],
+    &quot;timezone&quot; : &quot;Europe/London&quot;,
+    &quot;user_id&quot; : &quot;4eb854340acb04e870000010&quot;
+  },
+  {
+    ...
+  }
+]
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function getAllProfiles
+ * @param Callback: @param {BufferAppError} error, @param {object} profiles
+ **/</span>
+exports.getAllProfiles =  <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(Callback)</span> {</span>
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for getAllProfiles call'</span>);
+	};
+	request(<span class="hljs-string">'https://api.bufferapp.com/1/profiles.json?access_token='</span> + <span class="hljs-keyword">this</span>._token.toString()
+		, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			  <span class="hljs-keyword">var</span> profiles, err;
+			  <span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+			    <span class="hljs-keyword">this</span>.profiles = <span class="hljs-built_in">JSON</span>.parse(body);
+			    profiles = <span class="hljs-keyword">this</span>.profiles;
+			  };
+			  <span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || profiles.success == <span class="hljs-literal">false</span>) {
+			  	err = <span class="hljs-keyword">new</span> BufferAppError(error, response, profiles);
+			  };
+			  Callback(err, profiles);
+		  };
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h2 id="get-profile">get Profile</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Get details of the single specified social media profile.
+Takes an id for a social media account and a Callback to which the JSON response is sent along with
+an <a href="error.html">error object</a>, if any<br>A sample response, taken from <a href="http://bufferapp.com/developers/api/profiles">http://bufferapp.com/developers/api/profiles</a> is </p>
+<pre><code class="lang-javascript">{ 
+  &quot;avatar&quot; : &quot;http://a3.twimg.com/profile_images/1405180232.png&quot;,
+  &quot;created_at&quot; :  1320703028,
+  &quot;default&quot; : true,
+  &quot;formatted_username&quot; : &quot;@skinnyoteam&quot;,
+  &quot;id&quot; : &quot;4eb854340acb04e870000010&quot;,
+  &quot;schedules&quot; : [{ 
+      &quot;days&quot; : [ 
+          &quot;mon&quot;,
+          &quot;tue&quot;,
+          &quot;wed&quot;,
+          &quot;thu&quot;,
+          &quot;fri&quot;
+      ],
+      &quot;times&quot; : [ 
+          &quot;12:00&quot;,
+          &quot;17:00&quot;,
+          &quot;18:00&quot;
+      ]
+  }],
+  &quot;service&quot; : &quot;twitter&quot;,
+  &quot;service_id&quot; : &quot;164724445&quot;,
+  &quot;service_username&quot; : &quot;skinnyoteam&quot;,
+  &quot;statistics&quot; : { 
+      &quot;followers&quot; : 246 
+  },
+  &quot;team_members&quot; : [
+      &quot;4eb867340acb04e670000001&quot;
+  ],
+  &quot;timezone&quot; : &quot;Europe/London&quot;,
+  &quot;user_id&quot; : &quot;4eb854340acb04e870000010&quot;
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function getProfile
+ * @param {String} id
+ * @param {function} Callback: @param {BufferAppError} error, @param {object} profile
+ **/</span>
+exports.getProfile = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, Callback)</span> {</span>
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for getProfile call'</span>);
+	};
+	request(<span class="hljs-string">'https://api.bufferapp.com/1/profiles/'</span> + id + <span class="hljs-string">'.json?access_token='</span> + 
+		<span class="hljs-keyword">this</span>._token.toString(), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			  <span class="hljs-keyword">var</span> profile, err;
+			  <span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+			    profile = <span class="hljs-built_in">JSON</span>.parse(body);
+			  };
+			  <span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || profile.success == <span class="hljs-literal">false</span>) {
+			  	err = BufferAppError(error, response, profile);
+			  };
+			  Callback(err, profile);
+		  };
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h2 id="get-schedule">get Schedule</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Returns details of the posting schedules associated with a social media profile.
+Takes an id for a social media account and a Callback to which the JSON response is sent along with
+an <a href="error.html">error object</a>, if any<br>A sample response, taken from <a href="http://bufferapp.com/developers/api/profiles">http://bufferapp.com/developers/api/profiles</a> is </p>
+<pre><code class="lang-javascript">[{ 
+  &quot;days&quot; : [ 
+      &quot;mon&quot;,
+      &quot;tue&quot;,
+      &quot;wed&quot;,
+      &quot;thu&quot;,
+      &quot;fri&quot;
+  ],
+  &quot;times&quot; : [ 
+      &quot;12:00&quot;,
+      &quot;17:00&quot;,
+      &quot;18:00&quot;
+  ]
+},
+{
+  ...
+}]
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function getSchedule
+ * @param {String} id
+ * @param {function} Callback: @param {BufferAppError} error, @param {object} schedules
+ **/</span>
+exports.getSchedule = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, Callback)</span> {</span>
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for getSchedule call'</span>);
+	};
+	request(<span class="hljs-string">'https://api.bufferapp.com/1/profiles/'</span> + id + <span class="hljs-string">'/schedules.json?access_token='</span> + 
+		<span class="hljs-keyword">this</span>._token.toString(), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			  <span class="hljs-keyword">var</span> schedules, err;
+			  <span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+			    schedules = <span class="hljs-built_in">JSON</span>.parse(body);
+			  };
+			  <span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || schedules.success == <span class="hljs-literal">false</span>) {
+			  	err = BufferAppError(error, response, schedules);
+			  };
+			  Callback(err, schedules);
+		  };
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h2 id="set-schedule">set Schedule</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Set the posting schedules for the specified social media profile.
+Takes an id for a social media account, an array of schedules and an optional Callback on completion
+Format of the <code>new_schedules</code> should be same as that of the JSON response to <a href="#section-6">getSchedule</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function setSchedule
+ * @param {String} id
+ * @param {object} new_schedules
+ * @optional @param {function} Callback: @param {BufferAppError} error, @param {boolean} success
+ **/</span>
+exports.setSchedule = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, new_schedules, Callback)</span> {</span>
+	request(<span class="hljs-string">'https://api.bufferapp.com/1/profiles/'</span> + id + <span class="hljs-string">'/schedules/update.json'</span> + 
+		new_schedules, <span class="hljs-string">"POST"</span>, {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()},
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			  <span class="hljs-keyword">var</span> reply, err, success;
+			  <span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+			    reply = <span class="hljs-built_in">JSON</span>.parse(body);
+			    success = reply.success;
+			  }
+			  <span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || reply.success == <span class="hljs-literal">false</span>) {
+			  	err = BufferAppError(error, response, reply);
+			  };
+			  <span class="hljs-keyword">if</span> (err || <span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'undefined'</span>) {
+			  	Callback(err, success);
+			  };
+		  }
+	);
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
