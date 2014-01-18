@@ -1,7 +1,7 @@
 {
   "name": "node-bufferapp",
-  "version": "0.1.0",
-  "description": "A Nodejs SDK for Buffer APIs http://bufferapp.com/",
+  "version": "0.1.1",
+  "description": "A Nodejs SDK for Buffer APIs. http://bufferapp.com/",
   "main": "./lib",
   "scripts": {
     "test": "npm test"
@@ -11,14 +11,11 @@
     "url": "https://github.com/shrikrishnaholla/node-bufferapp.git"
   },
   "keywords": [
-    "Buffer",
+    "Buffer",    
+    "buffer",
     "bufferapp",
-    "buffer",
-    "sdk",
-    "buffer",
-    "api",
-    "buffer",
-    "client"
+    "client",
+    "sdk"
   ],
   "author": "Shrikrishna Holla <shrikrishna.holla@gmail.com>",
   "license": "MIT",
