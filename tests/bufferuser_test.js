@@ -167,4 +167,11 @@ describe('BufferUser', function() {
         bufferuser.shareOneStatus(buffered_status_update_id, done);
     });
   });
+
+  describe(':getConfigInfo', function() {
+    it(':Should return an object with the current configuration',
+      function(done) {
+        bufferuser.getConfigInfo(done);
+    });
+  });
 });
