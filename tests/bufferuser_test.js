@@ -1,4 +1,5 @@
-var BufferUser = require('../lib/bufferuser').BufferUser
+var libpath = process.env['NODE_BUFFERAPP_COV'] ? '../lib-cov' : '../lib';
+var BufferUser = require(libpath + '/bufferuser').BufferUser
 , config = require('./config')
 , assert = require('assert');
 

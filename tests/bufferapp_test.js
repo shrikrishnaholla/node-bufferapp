@@ -1,4 +1,5 @@
-var BufferApp = require('../lib')
+var libpath = process.env['NODE_BUFFERAPP_COV'] ? '../lib-cov' : '../lib';
+var BufferApp = require(libpath)
 , config = require('./config')
 , assert = require('assert');
 
@@ -37,7 +38,7 @@ describe('BufferApp', function() {
   					}
   				});
   			};
-  		}).listen(3000);
+  		}).listen(config.test_server_port);
   		console.log('Listening in on localhost:3000. Go to http://localhost:3000 through a web browser');
   	  });
   });
