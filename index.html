@@ -31,7 +31,7 @@
         <h1>
 <a name="node-bufferapp" class="anchor" href="#node-bufferapp"><span class="octicon octicon-link"></span></a>node-bufferapp</h1>
 
-<p>Node.js SDK for Buffer APIs <a href="http://bufferapp.com">http://bufferapp.com</a></p>
+<p>Node.js SDK for <a href="http://bufferapp.com">Buffer</a> APIs</p>
 
 <h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
@@ -42,24 +42,74 @@
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>First, create a Buffer Client  </p>
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express'</span><span class="p">)</span>
+<span class="p">,</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">()</span>
+<span class="p">,</span><span class="nx">BufferApp</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'node-bufferapp'</span><span class="p">);</span>
 
-<pre><code>var BufferApp = require('node-bufferapp');  
-var bufferapp = new BufferApp({  
-    clientID : YOUR_APP_CLIENT_ID,  
-    clientSecret : YOUR_APP_CLIENT_SECRET,  
-    callbackURL : YOUR_APP_CALLBACK_URL  
-});  
-</code></pre>
+<span class="kd">var</span> <span class="nx">bufferapp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BufferApp</span><span class="p">({</span>
+    <span class="nx">clientID</span> <span class="o">:</span> <span class="nx">YOUR_APP_CLIENT_ID</span><span class="p">,</span>
+    <span class="nx">clientSecret</span> <span class="o">:</span> <span class="nx">YOUR_APP_CLIENT_SECRET</span><span class="p">,</span>
+    <span class="nx">callbackURL</span> <span class="o">:</span> <span class="nx">YOUR_APP_CALLBACK_URL</span>
+<span class="p">});</span>
 
-<p>Then, create a new user by logging him in</p>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/auth'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Your user has to authorize your app to use his/her account</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="nx">bufferapp</span><span class="p">.</span><span class="nx">getAuthorizationURI</span><span class="p">());</span>
+<span class="p">});</span>
 
-<pre><code>bufferapp.login(function(user){  
-  console.log(user.profile);  
-});  
-</code></pre>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'YOUR_CALLBACK_PATH'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Extract the code that would have been sent as a query parameter to your callback URL</span>
+    <span class="kd">var</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">code</span><span class="p">;</span>
+    <span class="nx">bufferapp</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">code</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// user is an instance of BufferUser which can then be used to make authorized api calls</span>
+        <span class="nx">user</span><span class="p">.</span><span class="nx">getInfo</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">info</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">info</span><span class="p">));</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
 
 <p>The complete API documentation is in <a href="http://shrikrishnaholla.github.io/node-bufferapp/docs">docs</a></p>
+
+<h2>
+<a name="development" class="anchor" href="#development"><span class="octicon octicon-link"></span></a>Development</h2>
+
+<pre><code>$git clone https://github.com/shrikrishnaholla/node-bufferapp.git
+$cd node-bufferapp
+$npm install
+</code></pre>
+
+<h4>
+<a name="running-tests" class="anchor" href="#running-tests"><span class="octicon octicon-link"></span></a>Running tests</h4>
+
+<ul>
+<li>Register a test application <a href="http://bufferapp.com/developers/apps/create">here</a> (For login test)</li>
+<li>Get the Client ID, Client Secret, Callback URL, Test Access token</li>
+<li>Add these information to tests/config.js</li>
+<li>Run <code>$npm test</code>
+</li>
+</ul><h6>
+<a name="note" class="anchor" href="#note"><span class="octicon octicon-link"></span></a>Note</h6>
+
+<p>The tests include one for login, which runs a local server. You need to access it through a web browser and complete the authorization process to finish the test</p>
+
+<h4>
+<a name="generating-test-coverage-report" class="anchor" href="#generating-test-coverage-report"><span class="octicon octicon-link"></span></a>Generating Test Coverage Report</h4>
+
+<p>Needs <a href="http://siliconforks.com/jscoverage/">JSCoverage</a> and <a href="http://visionmedia.github.io/mocha/#suite-specific-timeouts">Mocha</a></p>
+
+<pre><code>$make coverage
+</code></pre>
+
+<p>Then go to <code>http://localhost:YOUR_TEST_SERVER_PORT</code> to complete the login test</p>
+
+<h4>
+<a name="generating-documentation" class="anchor" href="#generating-documentation"><span class="octicon octicon-link"></span></a>Generating Documentation</h4>
+
+<p>Needs <a href="http://jashkenas.github.io/docco/">Docco</a></p>
+
+<pre><code>$make doc
+</code></pre>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/shrikrishnaholla">shrikrishnaholla</a></p>
