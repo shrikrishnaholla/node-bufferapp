@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>updates.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bufferapp.html">
+                bufferapp.js
+              </a>
+            
+              
+              <a class="source" href="bufferuser.html">
+                bufferuser.js
+              </a>
+            
+              
+              <a class="source" href="error.html">
+                error.js
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                index.js
+              </a>
+            
+              
+              <a class="source" href="info.html">
+                info.js
+              </a>
+            
+              
+              <a class="source" href="links.html">
+                links.js
+              </a>
+            
+              
+              <a class="source" href="profiles.html">
+                profiles.js
+              </a>
+            
+              
+              <a class="source" href="updates.html">
+                updates.js
+              </a>
+            
+              
+              <a class="source" href="user.html">
+                user.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>updates.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> BufferAppError = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./error'</span>).BufferAppError;
+<span class="hljs-keyword">var</span> request = <span class="hljs-built_in">require</span>(<span class="hljs-string">'request'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2 id="get-one-update">get One Update</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Get a single social media update.
+Takes a social media account id and a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{ 
+  &quot;id&quot; : &quot;4eb8565e0acb04bb82000004&quot;,
+  &quot;created_at&quot; : 1320703582,
+  &quot;day&quot; : &quot;Monday 7th November&quot;,
+  &quot;due_at&quot; : 1320742680,
+  &quot;due_time&quot; : &quot;10:09 pm&quot;,
+  &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+  &quot;profile_service&quot; : &quot;twitter&quot;,
+  &quot;sent_at&quot; : 1320744001,
+  &quot;service_update_id&quot; : &quot;133667319959392256&quot;,
+  &quot;statistics&quot; : { 
+      &quot;reach&quot; : 2460,
+      &quot;clicks&quot; : 56,
+      &quot;retweets&quot;: 20,
+      &quot;favorites&quot;: 1,
+      &quot;mentions&quot;: 1
+  },
+  &quot;status&quot; : &quot;sent&quot;,
+  &quot;text&quot; : &quot;This is just the beginning, the very beginning, of the transfor...&quot;,
+  &quot;text_formatted&quot; : &quot;This is just the beginning, the very beginning, of th...&quot;,
+  &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+  &quot;via&quot; : &quot;chrome&quot;
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function getOneUpdate
+ * @param {String} id
+ * @param Callback: @param {BufferAppError} error, @param {object} update
+ **/</span>
+exports.getOneUpdate = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, Callback)</span> {</span>
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for getOneUpdate call'</span>);
+	};
+	request(<span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/updates/'</span> + id + <span class="hljs-string">'.json?access_token='</span> + 
+		<span class="hljs-keyword">this</span>._token.toString(), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> update, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				update = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || update.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, update);
+			};
+			Callback(err, update);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h2 id="get-buffered-updates">get Buffered Updates</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Get an array of updates that are currently in the buffer for an individual social media profile.
+Takes the following parameters</p>
+<ul>
+<li><strong>page</strong><br><em>optional</em>, <em>integer</em><br>Specifies the page of status updates to receive. If not specified the first page of results will be returned.</li>
+<li><strong>count</strong><br><em>optional</em>, <em>integer</em><br>Specifies the number of status updates to receive. If provided, must be between 1 and 100.</li>
+<li><strong>since</strong><br><em>optional</em>, <em>timestamp</em><br>Specifies a unix timestamp which only status updates created after this time will be retrieved.</li>
+<li><strong>utc</strong><br><em>optional</em>, <em>boolean</em><br>If utc is set times will be returned relative to UTC rather than the users associated timezone.</li>
+</ul>
+<p>It also takes a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{
+  &quot;total&quot; : 8,
+  &quot;updates&quot; : [ {
+      &quot;id&quot; : &quot;4ec93ae4512f7e6307000002&quot;,
+      &quot;created_at&quot; : 1320703582,
+      &quot;day&quot; : &quot;Monday 7th November&quot;,
+      &quot;due_at&quot; : 1320543480,
+      &quot;due_time&quot; : &quot;07:01 pm&quot;,
+      &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+      &quot;profile_service&quot; : &quot;twitter&quot;,
+      &quot;status&quot; : &quot;buffer&quot;,
+      &quot;text&quot; : &quot;This is me in an alternate life where i can breakdance j.mp/w...&quot;,
+      &quot;text_formatted&quot; : &quot;This is me in an alternate life where i can breakda...&quot;,
+      &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+      &quot;via&quot; : &quot;firefox&quot;
+  },
+  {
+      ...
+  }]
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function getBufferedUpdates
+ * @param {String} id
+ * @optional @param {number} page
+ * @optional @param {number} count
+ * @optional @param {number} since
+ * @optional @param {boolean} utc
+ * @param Callback: @param {BufferAppError} error, @param {object} bufferedUpdates
+ **/</span>
+exports.getBufferedUpdates = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, page, count, since, utc, Callback)</span> {</span>
+	<span class="hljs-keyword">var</span> args = [];
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+        args.push(<span class="hljs-built_in">arguments</span>[i]);
+    };
+    Callback = args.pop();
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for getBufferedUpdates call'</span>);
+	};
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) id = args.shift(); <span class="hljs-keyword">else</span> id = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) page = args.shift(); <span class="hljs-keyword">else</span> page = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) count = args.shift(); <span class="hljs-keyword">else</span> count = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) since = args.shift(); <span class="hljs-keyword">else</span> since = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) utc = args.shift(); <span class="hljs-keyword">else</span> utc = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">if</span> (id === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'User ID required for getBufferedUpdates call'</span>);
+    };
+
+    <span class="hljs-keyword">var</span> uri = <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/profiles/'</span> + id + <span class="hljs-string">'/updates/pending.json?access_token='</span> + <span class="hljs-keyword">this</span>._token;
+    <span class="hljs-keyword">if</span> (page) uri += <span class="hljs-string">'&amp;page='</span> + <span class="hljs-built_in">encodeURIComponent</span>(page.toString());
+    <span class="hljs-keyword">if</span> (count) uri += <span class="hljs-string">'&amp;count='</span> + <span class="hljs-built_in">encodeURIComponent</span>(count.toString());
+    <span class="hljs-keyword">if</span> (since) uri += <span class="hljs-string">'&amp;since='</span> + <span class="hljs-built_in">encodeURIComponent</span>(since.toString());
+    <span class="hljs-keyword">if</span> (utc) uri += <span class="hljs-string">'&amp;utc='</span> + <span class="hljs-built_in">encodeURIComponent</span>(utc.toString());
+
+    request(uri, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> bufferedUpdates, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				bufferedUpdates = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || bufferedUpdates.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, bufferedUpdates);
+			};
+			Callback(err, bufferedUpdates);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h2 id="get-sent-updates">get Sent Updates</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Get an array of updates that have been sent from the buffer for an individual social media profile.
+Takes the following parameters</p>
+<ul>
+<li><strong>page</strong><br><em>optional</em>, <em>integer</em><br>Specifies the page of status updates to receive. If not specified the first page of results will be returned.</li>
+<li><strong>count</strong><br><em>optional</em>, <em>integer</em><br>Specifies the number of status updates to receive. If provided, must be between 1 and 100.</li>
+<li><strong>since</strong><br><em>optional</em>, <em>timestamp</em><br>Specifies a unix timestamp which only status updates sent after this time will be retrieved.</li>
+<li><strong>utc</strong><br><em>optional</em>, <em>boolean</em><br>If utc is set times will be returned relative to UTC rather than the users associated timezone.</li>
+</ul>
+<p>It also takes a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{
+  &quot;total&quot; : 97,
+  &quot;updates&quot; : [ {
+      &quot;id&quot; : &quot;4ebc559d0acb04221b000008&quot;,
+      &quot;created_at&quot; : 1320703582,
+      &quot;day&quot; : &quot;Monday 7th November&quot;,
+      &quot;due_at&quot; : 1320742680,
+      &quot;due_time&quot; : &quot;10:09 pm&quot;,
+      &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+      &quot;profile_service&quot; : &quot;twitter&quot;,
+      &quot;sent_at&quot; : 1320744001,
+      &quot;service_update_id&quot; : &quot;133667319959392256&quot;,
+      &quot;statistics&quot; : { 
+          &quot;reach&quot; : 2460,
+          &quot;clicks&quot; : 56,
+          &quot;retweets&quot;: 20,
+          &quot;favorites&quot;: 1,
+          &quot;mentions&quot;: 1
+      },
+      &quot;status&quot; : &quot;sent&quot;,
+      &quot;text&quot; : &quot;This is just the beginning, the very beginning, of the tran...&quot;,
+      &quot;text_formatted&quot; : &quot;This is just the beginning, the very beginning, o...&quot;,
+      &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+      &quot;via&quot; : &quot;chrome&quot;
+  },
+  {
+      ...
+  }]
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function getSentUpdates
+ * @param {String} id
+ * @optional @param {number} page
+ * @optional @param {number} count
+ * @optional @param {number} since
+ * @optional @param {boolean} utc
+ * @param Callback: @param {BufferAppError} error, @param {object} sentUpdates
+ **/</span>
+exports.getSentUpdates = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, page, count, since, utc, Callback)</span> {</span>
+	<span class="hljs-keyword">var</span> args = [];
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+        args.push(<span class="hljs-built_in">arguments</span>[i]);
+    };
+    Callback = args.pop();
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for getSentUpdates call'</span>);
+	};
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) id = args.shift(); <span class="hljs-keyword">else</span> id = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) page = args.shift(); <span class="hljs-keyword">else</span> page = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) count = args.shift(); <span class="hljs-keyword">else</span> count = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) since = args.shift(); <span class="hljs-keyword">else</span> since = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) utc = args.shift(); <span class="hljs-keyword">else</span> utc = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">if</span> (id === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'User ID required for getSentUpdates call'</span>);
+    };
+
+    <span class="hljs-keyword">var</span> uri = <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/profiles/'</span> + id + <span class="hljs-string">'/updates/sent.json?access_token='</span> + <span class="hljs-keyword">this</span>._token;
+    <span class="hljs-keyword">if</span> (page) uri += <span class="hljs-string">'&amp;page='</span> + <span class="hljs-built_in">encodeURIComponent</span>(page.toString());
+    <span class="hljs-keyword">if</span> (count) uri += <span class="hljs-string">'&amp;count='</span> + <span class="hljs-built_in">encodeURIComponent</span>(count.toString());
+    <span class="hljs-keyword">if</span> (since) uri += <span class="hljs-string">'&amp;since='</span> + <span class="hljs-built_in">encodeURIComponent</span>(since.toString());
+    <span class="hljs-keyword">if</span> (utc) uri += <span class="hljs-string">'&amp;utc='</span> + <span class="hljs-built_in">encodeURIComponent</span>(utc.toString());
+
+    request(uri, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> sentUpdates, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				sentUpdates = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || sentUpdates.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, sentUpdates);
+			};
+			Callback(err, sentUpdates);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h2 id="get-interactions">get Interactions</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Returns the detailed information on individual interactions with the social media update such as
+favorites, retweets and likes.
+Takes the following parameters</p>
+<ul>
+<li><strong>event</strong><br><em>required</em>, <em>string</em><br>Specifies a type of event to be retrieved, for example &quot;retweet&quot;, &quot;like&quot;, &quot;comment&quot;, &quot;mention&quot; or &quot;reshare&quot;.
+They can also be plural (e.g., &quot;reshares&quot;). Plurality has no effect other than visual semantics.
+See getConfigInfo for more information on supported interaction events.</li>
+<li><strong>page</strong><br><em>optional</em>, <em>integer</em><br>Specifies the page of interactions to receive. If not specified the first page of results will be returned.</li>
+<li><strong>count</strong><br><em>optional</em>, <em>integer</em><br>Specifies the number of interactions to receive. If provided, must be between 1 and 100.</li>
+</ul>
+<p>It also takes a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{
+    &quot;total&quot;:2,
+    &quot;interactions&quot;:[
+        {
+            &quot;_id&quot;:&quot;50f98310c5ac415d7f2e74fd&quot;,
+            &quot;created_at&quot;:1358509258,
+            &quot;event&quot;:&quot;favorite&quot;,
+            &quot;id&quot;:&quot;50f98310c5ac415d7f2e74fd&quot;,
+            &quot;interaction_id&quot;:&quot;292235127847788544&quot;,
+            &quot;user&quot;:{
+                &quot;username&quot;:&quot;Crispy Potatoes&quot;,
+                &quot;followers&quot;:160,
+                &quot;avatar&quot;:&quot;http:\/\/si0.twimg.com\/profile_images\/...&quot;,
+                &quot;avatar_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_images\/...&quot;,
+                &quot;twitter_id&quot;:&quot;70712344376&quot;
+            }
+        },
+        {
+            &quot;_id&quot;:&quot;50f8623ac5ac415d7f1d4f77&quot;,
+            &quot;created_at&quot;:1358454592,
+            &quot;event&quot;:&quot;retweet&quot;,
+            &quot;id&quot;:&quot;50f8623ac5ac415d7f1d4f77&quot;,
+            &quot;interaction_id&quot;:&quot;292005842654461953&quot;,
+            &quot;user&quot;:{
+                &quot;username&quot;:&quot;Lucky Number 8&quot;,
+                &quot;followers&quot;:36079,
+                &quot;avatar&quot;:&quot;http:\/\/si0.twimg.com\/profile_images\/2901468678\/...&quot;,
+                &quot;avatar_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_images\/2901468678\/...&quot;,
+                &quot;twitter_id&quot;:&quot;1423444249&quot;
+            }
+        }
+    ]
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function getInteractions
+ * @param {String} id
+ * @param {String} event
+ * @optional @param {number} page
+ * @optional @param {number} count
+ * @param Callback: @param {BufferAppError} error, @param {object} interactions
+ **/</span>
+exports.getInteractions = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, event, page, count, Callback)</span> {</span>
+	<span class="hljs-keyword">var</span> args = [];
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+        args.push(<span class="hljs-built_in">arguments</span>[i]);
+    };
+    Callback = args.pop();
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for getInteractions call'</span>);
+	};
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) id = args.shift(); <span class="hljs-keyword">else</span> id = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) event = args.shift(); <span class="hljs-keyword">else</span> event = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) page = args.shift(); <span class="hljs-keyword">else</span> page = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) count = args.shift(); <span class="hljs-keyword">else</span> count = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">if</span> (id === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'User ID required for getInteractions call'</span>);
+    };
+    <span class="hljs-keyword">if</span> (event === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Type of event to be retrieved needs to be specified for getInteractions call'</span>);
+    };
+
+    <span class="hljs-keyword">var</span> uri = <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/updates/'</span> + id + <span class="hljs-string">'/interactions.json?access_token='</span> + <span class="hljs-keyword">this</span>._token +
+     <span class="hljs-string">'&amp;event='</span> + event.toString();
+    <span class="hljs-keyword">if</span> (page) uri += <span class="hljs-string">'&amp;page='</span> + <span class="hljs-built_in">encodeURIComponent</span>(page.toString());
+    <span class="hljs-keyword">if</span> (count) uri += <span class="hljs-string">'&amp;count='</span> + <span class="hljs-built_in">encodeURIComponent</span>(count.toString());
+
+    request(uri, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> interactions, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				interactions = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || interactions.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, interactions);
+			};
+			Callback(err, interactions);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h2 id="reorder-updates">reorder Updates</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Edit the order at which statuses for the specified social media profile will be sent out of the buffer.
+Takes the following parameters</p>
+<ul>
+<li><strong>order</strong><br><em>required</em>, <em>integer</em><br>An ordered array of status update id’s. This can be a partial array in combination with the
+offset parameter or a full array of every update in the profiles Buffer.</li>
+<li><strong>offset</strong><br><em>optional</em>, <em>integer</em><br>Specifies the number of status updates to receive. If provided, must be between 1 and 100.</li>
+<li><strong>utc</strong><br><em>optional</em>, <em>boolean</em><br>If utc is set times will be returned relative to UTC rather than the users associated timezone.</li>
+</ul>
+<p>It also takes a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{
+    &quot;success&quot; : true,
+    &quot;updates&quot; : [{
+        &quot;id&quot; : &quot;4eb854340acb04e870000010&quot;,
+        &quot;created_at&quot; : 1320703582,
+        &quot;day&quot; : &quot;Saturday 5th November&quot;,
+        &quot;due_at&quot; : 1320742680,
+        &quot;due_time&quot; : &quot;08:01 am&quot;,
+        &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+        &quot;profile_service&quot; : &quot;twitter&quot;,
+        &quot;status&quot; : &quot;buffer&quot;,
+        &quot;text&quot; : &quot;3 Incredible Stories Made Possible Through Twitter j.mp/u...&quot;,
+        &quot;text_formatted&quot; : &quot;3 Incredible Stories Made Possible Through Twit...&quot;,
+        &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+        &quot;via&quot; : &quot;safari&quot;
+    },
+    {
+        ...
+    }]
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function reorderUpdates
+ * @param {String} id
+ * @param {Array} order
+ * @optional @param {number} offset
+ * @optional @param {boolean} utc
+ * @param Callback: @param {BufferAppError} error, @param {object} new_order
+ **/</span>
+exports.reorderUpdates = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, order, offset, utc, Callback)</span> {</span>
+	<span class="hljs-keyword">var</span> args = [];
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+        args.push(<span class="hljs-built_in">arguments</span>[i]);
+    };
+    Callback = args.pop();
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for reorderUpdates call'</span>);
+	};
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) id = args.shift(); <span class="hljs-keyword">else</span> id = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) order = args.shift(); <span class="hljs-keyword">else</span> order = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) offset = args.shift(); <span class="hljs-keyword">else</span> offset = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) utc = args.shift(); <span class="hljs-keyword">else</span> utc = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">if</span> (id === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'User ID required for reorderUpdates call'</span>);
+    };
+    <span class="hljs-keyword">if</span> (order === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Type of order to be retrieved needs to be specified for reorderUpdates call'</span>);
+    };
+
+    <span class="hljs-keyword">var</span> uri = <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/profiles/'</span> + id + <span class="hljs-string">'/updates/reorder.json'</span>;
+    queryparams = {
+    	order 		: order
+    };
+    <span class="hljs-keyword">if</span> (offset) queryparams.offset = offset;
+    <span class="hljs-keyword">if</span> (utc) queryparams.utc = utc;
+
+    request({
+            uri :uri,
+            form : queryparams,
+            method : <span class="hljs-string">"POST"</span>,
+            headers : {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()}
+        },
+    	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> new_order, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				new_order = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || new_order.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, new_order);
+			};
+			Callback(err, new_order);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h2 id="shuffle-updates">shuffle Updates</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Randomize the order at which statuses for the specified social media profile will be sent out of the buffer.
+Takes the following parameters</p>
+<ul>
+<li><strong>count</strong>
+<em>optional</em>, <em>integer</em><br>Specifies the number of status updates returned. These will correspond to the first status updates that will be posted.</li>
+<li><strong>utc</strong><br><em>optional</em>, <em>boolean</em><br>If utc is set times will be returned relative to UTC rather than the users associated timezone.</li>
+</ul>
+<p>It also takes a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{
+    &quot;success&quot; : true,
+    &quot;updates&quot; : [{
+        &quot;id&quot; : &quot;4eb854340acb04e870000010&quot;,
+        &quot;created_at&quot; : 1320703582,
+        &quot;day&quot; : &quot;Saturday 5th November&quot;,
+        &quot;due_at&quot; : 1320742680,
+        &quot;due_time&quot; : &quot;08:01 am&quot;,
+        &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+        &quot;profile_service&quot; : &quot;twitter&quot;,
+        &quot;status&quot; : &quot;buffer&quot;,
+        &quot;text&quot; : &quot;3 Incredible Stories Made Possible Through Twitter j.mp/u...&quot;,
+        &quot;text_formatted&quot; : &quot;3 Incredible Stories Made Possible Through Twit...&quot;,
+        &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+        &quot;via&quot; : &quot;safari&quot;
+    },
+    {
+        ...
+    }]
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function reorderUpdates
+ * @param {String} id
+ * @optional @param {number} count
+ * @optional @param {boolean} utc
+ * @param Callback: @param {BufferAppError} error, @param {object} new_order
+ **/</span>
+exports.shuffleUpdates = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, count, utc, Callback)</span> {</span>
+	<span class="hljs-keyword">var</span> args = [];
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+        args.push(<span class="hljs-built_in">arguments</span>[i]);
+    };
+    Callback = args.pop();
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for shuffleUpdates call'</span>);
+	};
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) id = args.shift(); <span class="hljs-keyword">else</span> id = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) count = args.shift(); <span class="hljs-keyword">else</span> count = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) utc = args.shift(); <span class="hljs-keyword">else</span> utc = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">if</span> (id === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'User ID required for shuffleUpdates call'</span>);
+    };
+
+    <span class="hljs-keyword">var</span> uri = <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/profiles/'</span> + id + <span class="hljs-string">'/updates/shuffle.json'</span>;
+    queryparams = {};
+    <span class="hljs-keyword">if</span> (count) queryparams.count = count.toString();
+    <span class="hljs-keyword">if</span> (utc) queryparams.utc = utc.toString();
+
+    request({
+            uri : uri,
+            form : queryparams,
+            method : <span class="hljs-string">"POST"</span>,
+            headers : {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()}
+        },
+    	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> new_order, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				new_order = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || new_order.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, new_order);
+			};
+			Callback(err, new_order);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h2 id="create-status">create Status</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Create one or more new status updates.
+Takes the following parameters</p>
+<ul>
+<li><strong>text</strong><br><em>required</em>, <em>string</em><br>The status update text</li>
+<li><strong>profile_ids</strong><br><em>required</em>, <em>array</em><br>An array of profile id’s that the status update should be sent to. Invalid profile_id’s will be silently ignored.</li>
+<li><strong>shorten</strong><br><em>optional</em>, <em>boolean</em><br>If shorten is false links within the text will not be automatically shortened, otherwise they will.</li>
+<li><strong>now</strong><br><em>optional</em>, <em>boolean</em><br>If now is set, this update will be sent immediately to all profiles instead of being added to the buffer.</li>
+<li><strong>top</strong><br><em>optional</em>, <em>boolean</em><br>If top is set, this update will be added to the top of the buffer and will become the next update sent.</li>
+<li><strong>media</strong><br><em>optional</em>, <em>associative array</em><br>An associative array of media to be attached to the update, currently accepts
+link, description, title and photo parameters.</li>
+<li><strong>scheduled_at</strong><br><em>optional</em>, <em>timestamp or ISO 8601 formatted date-time</em><br>A date describing when the update should be posted. Overrides any top or now parameter.
+When using ISO 8601 format, if no UTC offset is specified, UTC is assumed.  </li>
+</ul>
+<p>It also takes a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{
+    &quot;success&quot; : true,
+    &quot;buffer_count&quot; : 10,
+    &quot;buffer_percentage&quot; : 20,
+    &quot;updates&quot; : [{
+        &quot;id&quot; : &quot;4ecda256512f7ee521000004&quot;,
+        &quot;created_at&quot; : 1320703582,
+        &quot;day&quot; : &quot;Saturday 26th November&quot;,
+        &quot;due_at&quot; : 1320742680,
+        &quot;due_time&quot; : &quot;11:05 am&quot;,
+        &quot;media&quot; : {
+            &quot;link&quot; : &quot;http://google.com&quot;,
+            &quot;title&quot; : &quot;Google&quot;,
+            &quot;description&quot; : &quot;The google homepage&quot;
+        },
+        &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+        &quot;profile_service&quot; : &quot;twitter&quot;,
+        &quot;status&quot; : &quot;buffer&quot;,
+        &quot;text&quot; : &quot;This is an example update&quot;,
+        &quot;text_formatted&quot; : &quot;This is an example update&quot;,
+        &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+        &quot;via&quot; : &quot;api&quot;
+    },
+    {
+        ...
+    }]
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function createStatus
+ * @param {String} text
+ * @param {Array} profile_ids
+ * @optional @param {boolean} shorten
+ * @optional @param {boolean} now
+ * @optional @param {boolean} top
+ * @optional @param {object} media
+ * @optional @param {number|String} scheduled_at
+ * @param Callback: @param {BufferAppError} error, @param {object} new_status
+ **/</span>
+exports.createStatus = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(text, profile_ids, shorten, now, top, media, scheduled_at, Callback)</span> {</span>
+	<span class="hljs-keyword">var</span> args = [];
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+        args.push(<span class="hljs-built_in">arguments</span>[i]);
+    };
+    Callback = args.pop();
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for createStatus call'</span>);
+	};
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) text = args.shift(); <span class="hljs-keyword">else</span> text = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) profile_ids = args.shift(); <span class="hljs-keyword">else</span> profile_ids = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) shorten = args.shift(); <span class="hljs-keyword">else</span> shorten = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) now = args.shift(); <span class="hljs-keyword">else</span> now = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) top = args.shift(); <span class="hljs-keyword">else</span> top = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) media = args.shift(); <span class="hljs-keyword">else</span> media = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) scheduled_at = args.shift(); <span class="hljs-keyword">else</span> scheduled_at = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">if</span> (text === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Can't create status without text"</span>);
+    };
+    <span class="hljs-keyword">if</span> (profile_ids === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Can't create status without knowing profile ids to update against"</span>);
+    };
+
+    <span class="hljs-keyword">var</span> uri = <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/updates/create.json'</span>;
+    queryparams = {
+    	text 			: text,
+    	profile_ids		: profile_ids,
+    };
+    <span class="hljs-keyword">if</span> (shorten) queryparams.shorten = shorten;
+    <span class="hljs-keyword">if</span> (now) queryparams.now = now;
+    <span class="hljs-keyword">if</span> (top) queryparams.top = top;
+    <span class="hljs-keyword">if</span> (media) queryparams.media = media;
+    <span class="hljs-keyword">if</span> (scheduled_at) queryparams.scheduled_at = scheduled_at;
+
+    request({
+            uri : uri,
+            form : queryparams,
+            method : <span class="hljs-string">"POST"</span>,
+            headers : {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()}
+        },
+    	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> new_status, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				new_status = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || new_status.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, new_status);
+			};
+			Callback(err, new_status);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <h2 id="update-status">update Status</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Edit an existing, individual status update.
+Takes the following parameters</p>
+<ul>
+<li><strong>text</strong><br><em>required</em>, <em>string</em><br>The status update text</li>
+<li><strong>now</strong><br><em>optional</em>, <em>boolean</em><br>If now is set, this update will be sent immediately to all profiles instead of being added to the buffer.</li>
+<li><strong>media</strong><br><em>optional</em>, <em>associative array</em><br>An associative array of media to be attached to the update, currently accepts
+link, description, title and photo parameters.</li>
+<li><strong>utc</strong><br><em>optional</em>, <em>boolean</em><br>If utc is set times will be returned relative to UTC rather than the users associated timezone.</li>
+<li><strong>scheduled_at</strong><br><em>optional</em>, <em>timestamp or ISO 8601 formatted date-time</em><br>A date describing when the update should be posted. Overrides any top or now parameter.
+When using ISO 8601 format, if no UTC offset is specified, UTC is assumed.  </li>
+</ul>
+<p>It also takes a callback as a parameter to which it passes an <a href="error.html">error object</a>,
+if any, and a JSON response. A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is  </p>
+<pre><code class="lang-javascript">{
+    &quot;success&quot; : true,
+    &quot;buffer_count&quot; : 10,
+    &quot;buffer_percentage&quot; : 20,
+    &quot;update&quot; : {
+        &quot;id&quot; : &quot;4ecda256512f7ee521000004&quot;,
+        &quot;client_id&quot; : &quot;4f850cc93733aa9301000002&quot;,
+        &quot;created_at&quot; : 1320703582,
+        &quot;day&quot; : &quot;Saturday 26th November&quot;,
+        &quot;due_at&quot; : 1320742680,
+        &quot;due_time&quot; : &quot;11:05 am&quot;,
+        &quot;media&quot; : {
+            &quot;link&quot; : &quot;http://google.com&quot;,
+            &quot;title&quot; : &quot;Google&quot;,
+            &quot;description&quot; : &quot;The google homepage&quot;
+        },
+        &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+        &quot;profile_service&quot; : &quot;twitter&quot;,
+        &quot;status&quot; : &quot;buffer&quot;,
+        &quot;text&quot; : &quot;This is an edited update&quot;,
+        &quot;text_formatted&quot; : &quot;This is an edited update&quot;,
+        &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+        &quot;via&quot; : &quot;api&quot;
+    }
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function updatedStatus
+ * @param {String} id
+ * @param {String} text
+ * @optional @param {boolean} now
+ * @optional @param {object} media
+ * @optional @param {boolean} utc
+ * @optional @param {number|String} scheduled_at
+ * @param Callback: @param {BufferAppError} error, @param {object} updated_status
+ **/</span>
+exports.updateStatus = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, text, now, media, utc, scheduled_at, Callback)</span> {</span>
+	<span class="hljs-keyword">var</span> args = [];
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+        args.push(<span class="hljs-built_in">arguments</span>[i]);
+    };
+    Callback = args.pop();
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> Callback !== <span class="hljs-string">'function'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Callback needed for updateStatus call'</span>);
+	};
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) id = args.shift(); <span class="hljs-keyword">else</span> id = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) text = args.shift(); <span class="hljs-keyword">else</span> text = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) now = args.shift(); <span class="hljs-keyword">else</span> now = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) media = args.shift(); <span class="hljs-keyword">else</span> media = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) utc = args.shift(); <span class="hljs-keyword">else</span> utc = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">if</span>(args.length &gt; <span class="hljs-number">0</span>) scheduled_at = args.shift(); <span class="hljs-keyword">else</span> scheduled_at = <span class="hljs-literal">null</span>;
+
+    <span class="hljs-keyword">if</span> (id === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'User ID required for updateStatus call'</span>);
+    };
+    <span class="hljs-keyword">if</span> (text === <span class="hljs-literal">null</span>) {
+    	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Can't update status without text"</span>);
+    };
+
+    <span class="hljs-keyword">var</span> uri = <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/updates/'</span> + id + <span class="hljs-string">'/update.json'</span>;
+    queryparams = {
+    	text : text,
+    };
+    <span class="hljs-keyword">if</span> (now) queryparams.now = now;
+    <span class="hljs-keyword">if</span> (media) queryparams.media = media;
+    <span class="hljs-keyword">if</span> (utc) queryparams.utc = utc;
+    <span class="hljs-keyword">if</span> (scheduled_at) queryparams.scheduled_at = scheduled_at;
+
+    request({
+            uri : uri, 
+            form : queryparams, 
+            method : <span class="hljs-string">"POST"</span>, 
+            headers : {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()}
+        },
+    	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> updated_status, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				updated_status = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || updated_status.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, updated_status);
+			};
+			Callback(err, updated_status);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h2 id="share-one-status">share One Status</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Immediately shares a single pending update and recalculates times for updates remaining in the queue.
+Takes an id for an update, and an optional Callback on completion</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function shareOneStatus
+ * @param {String} id
+ * @optional @param {function} Callback: @param {BufferAppError} error, @param {boolean} success
+ **/</span>
+exports.shareOneStatus = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, Callback)</span> {</span>
+	request({
+            uri : <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/updates/'</span> + id + <span class="hljs-string">'/share.json'</span>, 
+            method : <span class="hljs-string">"POST"</span>,
+            headers : {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()}
+        },
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> reply, err, success;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				reply = <span class="hljs-built_in">JSON</span>.parse(body);
+				success = reply.success;
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || reply.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, reply);
+                <span class="hljs-keyword">if</span> (Callback == <span class="hljs-literal">undefined</span>) <span class="hljs-keyword">throw</span> err;
+			};
+            <span class="hljs-keyword">if</span> (Callback != <span class="hljs-literal">undefined</span>) {
+		        Callback(err, success);
+            }
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h2 id="delete-one-status">delete One Status</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Permanently delete an existing status update.
+Takes an id for a status update, and an optional Callback on completion</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function deleteOneStatus
+ * @param {String} id
+ * @optional @param {function} Callback: @param {BufferAppError} error, @param {boolean} success
+ **/</span>
+exports.deleteOneStatus = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, Callback)</span> {</span>
+	request({
+            uri : <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/updates/'</span> + id + <span class="hljs-string">'/destroy.json'</span>, 
+            method : <span class="hljs-string">"POST"</span>, 
+            headers : {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()}
+        },
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> reply, err, success;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				reply = <span class="hljs-built_in">JSON</span>.parse(body);
+				success = reply.success;
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || reply.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, reply);
+			<span class="hljs-keyword">if</span> (Callback == <span class="hljs-literal">undefined</span>) <span class="hljs-keyword">throw</span> err;
+            };
+            <span class="hljs-keyword">if</span> (Callback != <span class="hljs-literal">undefined</span>) {
+                Callback(err, success);
+            }
+        }
+	);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <h2 id="move-to-top">move To Top</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Move an existing status update to the top of the queue and recalculate times for all updates in the queue.
+Returns the update with its new posting time.
+Takes an id for a status update, and an optional Callback to which the JSON response is sent along with
+an <a href="error.html">error object</a>, if any<br>A sample response, taken from <a href="http://bufferapp.com/developers/api/updates">http://bufferapp.com/developers/api/updates</a> is </p>
+<pre><code class="lang-javascript">{ 
+  &quot;id&quot; : &quot;4eb8565e0acb04bb82000004&quot;,
+  &quot;created_at&quot; : 1320703582,
+  &quot;day&quot; : &quot;Monday 7th November&quot;,
+  &quot;due_at&quot; : 1320742680,
+  &quot;due_time&quot; : &quot;10:09 pm&quot;,
+  &quot;profile_id&quot; : &quot;4eb854340acb04e870000010&quot;,
+  &quot;profile_service&quot; : &quot;twitter&quot;,
+  &quot;sent_at&quot; : 1320744001,
+  &quot;service_update_id&quot; : &quot;133667319959392256&quot;,
+  &quot;statistics&quot; : { 
+      &quot;reach&quot; : 2460,
+      &quot;clicks&quot; : 56,
+      &quot;retweets&quot;: 20,
+      &quot;favorites&quot;: 1,
+      &quot;mentions&quot;: 1
+  },
+  &quot;status&quot; : &quot;sent&quot;,
+  &quot;text&quot; : &quot;This is just the beginning, the very beginning, of the transfor...&quot;,
+  &quot;text_formatted&quot; : &quot;This is just the beginning, the very beginning, of th...&quot;,
+  &quot;user_id&quot; : &quot;4eb9276e0acb04bb81000067&quot;,
+  &quot;via&quot; : &quot;chrome&quot;
+}
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * @function moveToTop
+ * @param {String} id
+ * @optional @param {function} Callback: @param {BufferAppError} error, @param {boolean} new_status_update
+ **/</span>
+exports.moveToTop = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(id, Callback)</span> {</span>
+	request({
+            uri : <span class="hljs-keyword">this</span>.__api_base + <span class="hljs-string">'/updates/'</span> + id + <span class="hljs-string">'/move_to_top.json'</span>, 
+            method : <span class="hljs-string">"POST"</span>, 
+            headers : {<span class="hljs-string">"Authorization"</span>: <span class="hljs-string">"Bearer "</span> + <span class="hljs-keyword">this</span>._token.toString()}
+        },
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error, response, body)</span> {</span>
+			<span class="hljs-keyword">var</span> new_status_update, err;
+			<span class="hljs-keyword">if</span> (!error &amp;&amp; response.statusCode == <span class="hljs-number">200</span>) {
+				new_status_update = <span class="hljs-built_in">JSON</span>.parse(body);
+			};
+			<span class="hljs-keyword">if</span> (error || response.statusCode != <span class="hljs-number">200</span> || new_status_update.success == <span class="hljs-literal">false</span>) {
+				err = <span class="hljs-keyword">new</span> BufferAppError(error, response, new_status_update);
+			};
+			Callback(err, new_status_update);
+		}
+	);
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
