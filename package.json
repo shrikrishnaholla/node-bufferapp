@@ -1,17 +1,17 @@
 {
   "name": "node-bufferapp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Nodejs SDK for Buffer APIs. http://bufferapp.com/",
   "main": "./lib",
   "scripts": {
-    "test": "npm test"
+    "test": "./node_modules/mocha/bin/mocha tests -R spec"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/shrikrishnaholla/node-bufferapp.git"
   },
   "keywords": [
-    "Buffer",    
+    "Buffer",
     "buffer",
     "bufferapp",
     "client",
@@ -22,5 +22,14 @@
   "bugs": {
     "url": "https://github.com/shrikrishnaholla/node-bufferapp/issues"
   },
-  "homepage": "http://shrikrishnaholla.in/node-bufferapp/"
+  "homepage": "http://shrikrishnaholla.in/node-bufferapp/",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "request": "~2.33.0"
+  },
+  "devDependencies": {
+    "mocha": "~1.16.2"
+  }
 }
