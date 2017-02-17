@@ -62,7 +62,7 @@ $npm install
 The tests include one for login, which runs a local server. You need to access it through a web browser and complete the authorization process to finish the test
 
 #### Generating Test Coverage Report
-Needs [JSCoverage](http://siliconforks.com/jscoverage/) and [Mocha](http://visionmedia.github.io/mocha/#suite-specific-timeouts)
+Needs [JSCoverage](http://siliconforks.com/jscoverage/) and [Mocha](http://mochajs.org/)
 ```
 $make coverage
 ```
