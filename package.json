@@ -27,7 +27,7 @@
     "test": "tests"
   },
   "dependencies": {
-    "request": "~2.33.0"
+    "request": "~2.68.0"
   },
   "devDependencies": {
     "mocha": "~1.16.2"
