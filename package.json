@@ -1,6 +1,6 @@
 {
   "name": "node-bufferapp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Nodejs SDK for Buffer APIs. http://bufferapp.com/",
   "main": "./lib",
   "scripts": {
